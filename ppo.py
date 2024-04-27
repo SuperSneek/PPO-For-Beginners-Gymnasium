@@ -4,7 +4,7 @@
 			It can be found here: https://spinningup.openai.com/en/latest/_images/math/e62a8971472597f4b014c2da064f636ffe365ba3.svg
 """
 
-import gym
+import gymnasium as gym
 import time
 
 import numpy as np
@@ -183,7 +183,7 @@ class PPO:
 			ep_rews = [] # rewards collected per episode
 
 			# Reset the environment. sNote that obs is short for observation. 
-			obs = self.env.reset()
+			obs, _ = self.env.reset()
 			done = False
 
 			# Run an episode for a maximum of max_timesteps_per_episode timesteps
@@ -200,7 +200,8 @@ class PPO:
 				# Calculate action and make a step in the env. 
 				# Note that rew is short for reward.
 				action, log_prob = self.get_action(obs)
-				obs, rew, done, _ = self.env.step(action)
+				obs, rew, trunc, term, _ = self.env.step(action)
+				done=trunc or term
 
 				# Track recent reward, action, and action log probability
 				ep_rews.append(rew)
@@ -214,6 +215,7 @@ class PPO:
 			# Track episodic lengths and rewards
 			batch_lens.append(ep_t + 1)
 			batch_rews.append(ep_rews)
+
 
 		# Reshape data as tensors in the shape specified in function description, before returning
 		batch_obs = torch.tensor(batch_obs, dtype=torch.float)

@@ -3,7 +3,7 @@
 	https://medium.com/@eyyu/coding-ppo-from-scratch-with-pytorch-part-1-4-613dfc1b14c8
 """
 
-import gym
+import gymnasium as gym
 import sys
 import torch
 
@@ -96,7 +96,7 @@ def main(args):
 	# To see a list of hyperparameters, look in ppo.py at function _init_hyperparameters
 	hyperparameters = {
 				'timesteps_per_batch': 2048, 
-				'max_timesteps_per_episode': 200, 
+				'max_timesteps_per_episode': 50, 
 				'gamma': 0.99, 
 				'n_updates_per_iteration': 10,
 				'lr': 3e-4, 
@@ -108,7 +108,13 @@ def main(args):
 	# Creates the environment we'll be running. If you want to replace with your own
 	# custom environment, note that it must inherit Gym and have both continuous
 	# observation and action spaces.
-	env = gym.make('Pendulum-v0')
+ 
+	render_mode='human'
+	if args.mode == 'train':
+		render_mode="rgb_array"
+
+	env = gym.make('BipedalWalker-v3', render_mode=render_mode)
+	print(env.observation_space)
 
 	# Train or test, depending on the mode specified
 	if args.mode == 'train':
